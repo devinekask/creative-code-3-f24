@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Body Segmentation</title>
+  <style>
+    body {
+      background-color: beige;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+  <script>
+
+    let video, canvas, ctx;
+    let maskCanvas, maskCtx;
+    let bodySegmentation;
+    let segmentation;
+
+    async function preload() {
+      console.log('preload');
+      // bodySegmentation = ml5.bodySegmentation("BodyPix", { maskType: "parts"});
+      bodySegmentation = ml5.bodySegmentation("SelfieSegmentation", {
+        maskType: "person",
+      });
+      await bodySegmentation.ready;
+      console.log('model ready');
+      setup();
+    }
+
+    async function setup() {
+      console.log('setup');
+      // create a canvas
+      canvas = document.createElement('canvas');
+      document.body.appendChild(canvas);
+      ctx = canvas.getContext('2d');
+      // create a mask canvas
+      maskCanvas = document.createElement('canvas');
+      maskCtx = maskCanvas.getContext('2d');
+      // create a video stream - specify a fixed size
+      const stream = await navigator.mediaDevices.getUserMedia({ video: {
+        width: 640,
+        height: 480
+      } });
+      video = document.createElement('video');
+      video.srcObject = stream;
+      video.play();
+      // set video & canvas size
+      canvas.width = video.width = maskCanvas.width = 640;
+      canvas.height = video.height = maskCanvas.height = 480;
+      // start detecting
+      bodySegmentation.detectStart(video, gotResults);
+      requestAnimationFrame(draw);
+    }
+
+    function gotResults(result) {
+      segmentation = result;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (segmentation) {
+        // draw the mask to a canvas
+        maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+        maskCtx.putImageData(segmentation.mask, 0, 0);
+        // draw the video, masked
+        ctx.save();
+        ctx.drawImage(video, 0, 0);
+        ctx.globalCompositeOperation = 'xor';
+        ctx.drawImage(maskCanvas, 0, 0);
+        ctx.restore();
+      }
+      requestAnimationFrame(draw);
+    }
+
+    preload();
+  </script>
+</body>
+</html>
