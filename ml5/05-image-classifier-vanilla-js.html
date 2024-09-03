@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Classifier</title>
+</head>
+<body>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+  <script>
+
+    let video, canvas, ctx;
+    let classifier;
+    let classificationResults = [];
+
+    async function preload() {
+      console.log('preload');
+      classifier = ml5.imageClassifier("MobileNet");
+      await classifier.ready;
+      console.log('model ready');
+      setup();
+    }
+
+    async function setup() {
+      console.log('setup');
+      // create a canvas
+      canvas = document.createElement('canvas');
+      document.body.appendChild(canvas);
+      ctx = canvas.getContext('2d');
+      // create a video stream - specify a fixed size
+      const stream = await navigator.mediaDevices.getUserMedia({ video: {
+        width: 640,
+        height: 480
+      } });
+      video = document.createElement('video');
+      video.srcObject = stream;
+      video.play();
+      // set canvas & video size
+      canvas.width = video.width = 640;
+      canvas.height = video.height = 480;
+      // start detecting poses - use the canvas instead of the video (BlazePose compatibility)
+      // classifier.classify(video, gotResults);
+      classifier.classifyStart(video, gotResults);
+      requestAnimationFrame(draw);
+    }
+
+    function gotResults(results) {
+      classificationResults = results;
+    }
+
+    function draw() {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'red';
+      classificationResults.forEach((result, index) => {
+        ctx.font = '16px Arial';
+        ctx.fillText(`${result.label} (${result.confidence.toFixed(2)})`, 10, index * 20 + 20);
+      });
+      requestAnimationFrame(draw);
+    }
+
+    preload();
+  </script>
+</body>
+</html>
