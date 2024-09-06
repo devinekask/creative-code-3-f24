@@ -68,14 +68,13 @@
       // set canvas & video size
       $canvas.width = video.width = 640;
       $canvas.height = video.height = 480;
-      // start detecting poses - use the canvas instead of the video (BlazePose compatibility)
-      handPose.detectStart(video, gotPoses);
+      // start detecting poses
+      handPose.detectStart(video, (results) => {
+        // store the results in a global
+        hands = results;
+      });
       // start the app
       setState(STATE_RUNNING);
-    }
-
-    const gotPoses = (results) => {
-      hands = results;
     }
 
     const draw = () => {

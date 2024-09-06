@@ -47,10 +47,6 @@
     let classifier;
     let classificationResults = [];
 
-    // const imageModelURL = "https://teachablemachine.withgoogle.com/models/NisBvoTZ5/";
-    const origin = new URL(window.location.href);
-    const imageModelURL = new URL("./models/tm-my-image-model/", origin);
-
     const STATE_LOADING = "loading";
     const STATE_RUNNING = "running";
     const ALL_STATES = [STATE_LOADING, STATE_RUNNING];
@@ -68,6 +64,9 @@
       setState(STATE_LOADING);
       requestAnimationFrame(draw);
       ml5.setBackend("webgl");
+      // const imageModelURL = "https://teachablemachine.withgoogle.com/models/NisBvoTZ5/";
+      const origin = new URL(window.location.href);
+      const imageModelURL = new URL("./models/tm-my-image-model/", origin);
       classifier = ml5.imageClassifier(imageModelURL + "model.json");
       await classifier.ready;
       console.log('model ready');
@@ -88,15 +87,12 @@
       // set canvas & video size
       $canvas.width = video.width = 640;
       $canvas.height = video.height = 480;
-      // start detecting poses - use the canvas instead of the video (BlazePose compatibility)
-      // classifier.classify(video, gotResults);
-      classifier.classifyStart(video, gotResults);
+      classifier.classifyStart(video, (results) => {
+        // store in a global
+        classificationResults = results;
+      });
       // start the app
       setState(STATE_RUNNING);
-    }
-
-    const gotResults = (results) => {
-      classificationResults = results;
     }
 
     const draw = () => {

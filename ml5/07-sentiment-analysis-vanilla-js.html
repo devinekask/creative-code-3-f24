@@ -46,7 +46,7 @@
     const $form = document.querySelector("#form");
     const $results = document.querySelector("#results");
     const $state = document.querySelector('#state');
-    let sentiment;
+    let sentiment, prediction;
 
     const STATE_LOADING = "loading";
     const STATE_RUNNING = "running";
@@ -64,7 +64,6 @@
     const preload = async () => {
       setState(STATE_LOADING);
       requestAnimationFrame(draw);
-      const options = { probabilityThreshold: 0.7 };
       sentiment = ml5.sentiment("MovieReviews");
       await sentiment.ready;
       console.log('model ready');
@@ -81,11 +80,12 @@
     const handleSubmit = async (event) => {
       event.preventDefault();
       const sentence = $form.querySelector("#input").value;
-      const prediction = await sentiment.predict(sentence);
-      $results.textContent = prediction.confidence.toFixed(3);
+      // store the result in a global
+      prediction = await sentiment.predict(sentence);
     };
-
+    
     const draw = () => {
+      $results.textContent = prediction?.confidence.toFixed(3);
       requestAnimationFrame(draw);
     }
 

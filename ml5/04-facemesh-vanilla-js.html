@@ -30,7 +30,6 @@
 
     let video, ctx;
     let faceMesh;
-    let options = { maxFaces: 1, refineLandmarks: false, flipped: false };
     let faces = [];
 
     const STATE_LOADING = "loading";
@@ -49,6 +48,11 @@
     const preload = async () => {
       setState(STATE_LOADING);
       requestAnimationFrame(draw);
+      const options = {
+        maxFaces: 1,
+        refineLandmarks: false,
+        flipped: false
+      };
       faceMesh = ml5.faceMesh(options);
       await faceMesh.ready;
       console.log('model ready');
@@ -69,14 +73,13 @@
       // set canvas & video size
       $canvas.width = video.width = 640;
       $canvas.height = video.height = 480;
-      // start detecting poses - use the canvas instead of the video (BlazePose compatibility)
-      faceMesh.detectStart(video, gotPoses);
+      // start detecting faces
+      faceMesh.detectStart(video, (results) => {
+        // store in a global
+        faces = results;
+      });
       // start the app
       setState(STATE_RUNNING);
-    }
-
-    const gotPoses = (results) => {
-      faces = results;
     }
 
     const draw = () => {

@@ -85,13 +85,12 @@
       $canvas.height = video.height = 480;
       // start detecting poses - use the canvas instead of the video (BlazePose compatibility)
       // classifier.classify(video, gotResults);
-      classifier.classifyStart(video, gotResults);
+      classifier.classifyStart(video, (results) => {
+        // store in a global
+        classificationResults = results;
+      });
       // start the app
       setState(STATE_RUNNING);
-    }
-
-    const gotResults = (results) => {
-      classificationResults = results;
     }
 
     const draw = () => {

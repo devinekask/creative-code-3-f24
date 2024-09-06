@@ -41,7 +41,7 @@
     const $results = document.querySelector("#results");
     const $state = document.querySelector('#state');
     let classifier;
-    let predictedWord = "no word detected";
+    let classification = [];
     const words = [
       "zero",
       "one",
@@ -88,23 +88,24 @@
 
     const setup = async () => {
       console.log('setup');
+      // no need for video stream
+      // classifier contains its own
+      // logic to set up audio
       // start classification
-      classifier.classifyStart(gotResults);
+      classifier.classifyStart((results) => {
+        // store in global
+        classification = results;
+      });
       // start the app
       setState(STATE_RUNNING);
     }
 
-    const gotResults = (results) => {
-      console.log(results);
-      if (results[0].confidence > 0.7) {
-        predictedWord = results[0].label;
-      } else {
-        predictedWord = "no word detected";
-      }
-    }
-
     const draw = () => {
       if (state === STATE_RUNNING) {
+        let predictedWord = "no word detected";
+        if (classification[0]?.confidence > 0.7) {
+          predictedWord = classification[0].label;
+        }
         $results.textContent = predictedWord;
       }
       requestAnimationFrame(draw);

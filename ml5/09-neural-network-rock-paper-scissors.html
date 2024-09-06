@@ -74,16 +74,19 @@
     let handPose;
     let classifier;
     let hands = [];
+    let classificationResults = [];
 
     const STATE_LOADING = "loading";
     const STATE_SAMPLING = "sampling";
     const STATE_TRAINING = "training";
     const STATE_PREDICTING = "predicting";
-    const ALL_STATES = [STATE_LOADING, STATE_SAMPLING, STATE_TRAINING, STATE_PREDICTING];
-    let state = STATE_LOADING; // states for our app are "loading", "sampling", "training", "predicting"
-
-    const origin = new URL(window.location.href);
-    const pretrainedModelURL = new URL("./models/rock-paper-scissors/model.json", origin);
+    const ALL_STATES = [
+      STATE_LOADING,
+      STATE_SAMPLING,
+      STATE_TRAINING,
+      STATE_PREDICTING
+    ];
+    let state = STATE_LOADING;
 
     const setState = (value) => {
       console.log('setState', value);
@@ -117,8 +120,20 @@
       // set canvas & video size
       $canvas.width = video.width = 640;
       $canvas.height = video.height = 480;
-      // start detecting poses - use the canvas instead of the video (BlazePose compatibility)
-      handPose.detectStart(video, gotPoses);
+      // start detecting hands
+      handPose.detectStart(video, (results) => {
+        hands = results;
+        if (state === STATE_PREDICTING) {
+          if (hands.length === 0) {
+            return;
+          }
+          // the keypoints should be one big array of numbers
+          const keypoints = hands[0].keypoints.map(keypoint => [keypoint.x, keypoint.y]).flat();
+          classifier.classify(keypoints, (results) => {
+            classificationResults = results;
+          });
+        }
+      });
       // For this example to work across all browsers
       // "webgl" or "cpu" needs to be set as the backend
       ml5.setBackend("webgl");
@@ -128,6 +143,8 @@
         debug: true,
       };
       classifier = ml5.neuralNetwork(classifierOptions);
+      const origin = new URL(window.location.href);
+      const pretrainedModelURL = new URL("./models/rock-paper-scissors/model.json", origin);
       // add event listeners to buttons
       $rock.addEventListener('click', () => sample('rock'));
       $paper.addEventListener('click', () => sample('paper'));
@@ -169,23 +186,6 @@
       setState(STATE_PREDICTING);
     };
 
-    const gotPoses = (results) => {
-      hands = results;
-      if (state === STATE_PREDICTING) {
-        if (hands.length === 0) {
-          return;
-        }
-        // the keypoints should be one big array of numbers
-        const keypoints = hands[0].keypoints.map(keypoint => [keypoint.x, keypoint.y]).flat();
-        classifier.classify(keypoints, gotResults);
-      }
-    }
-
-    const gotResults = (results) => {
-      console.log(results);
-      $results.textContent = results[0].label;
-    }
-
     const draw = () => {
       if (state == STATE_LOADING) {
         drawLoading();
@@ -212,6 +212,7 @@
 
     const drawPredicting = () => {
       drawVideoWithKeyPoints();
+      $results.textContent = classificationResults[0]?.label;
     };
 
     const drawVideoWithKeyPoints = () => {
