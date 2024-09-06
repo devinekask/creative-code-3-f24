@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teachable Machine Image Classifier</title>
+</head>
+<body>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+  <script>
+
+    let video, canvas, ctx;
+    let classifier;
+    let classificationResults = [];
+
+    // const imageModelURL = "https://teachablemachine.withgoogle.com/models/NisBvoTZ5/";
+    const origin = new URL(window.location.href);
+    const imageModelURL = new URL("./models/tm-my-image-model/", origin);
+
+    const preload = async () => {
+      console.log('preload');
+      ml5.setBackend("webgl");
+      classifier = ml5.imageClassifier(imageModelURL + "model.json");
+      await classifier.ready;
+      console.log('model ready');
+      setup();
+    }
+
+    const setup = async () => {
+      console.log('setup');
+      // create a canvas
+      canvas = document.createElement('canvas');
+      document.body.appendChild(canvas);
+      ctx = canvas.getContext('2d');
+      // create a video stream - specify a fixed size
+      const stream = await navigator.mediaDevices.getUserMedia({ video: {
+        width: 640,
+        height: 480
+      } });
+      video = document.createElement('video');
+      video.srcObject = stream;
+      video.play();
+      // set canvas & video size
+      canvas.width = video.width = 640;
+      canvas.height = video.height = 480;
+      // start detecting poses - use the canvas instead of the video (BlazePose compatibility)
+      // classifier.classify(video, gotResults);
+      classifier.classifyStart(video, gotResults);
+      requestAnimationFrame(draw);
+    }
+
+    const gotResults = (results) => {
+      classificationResults = results;
+    }
+
+    const draw = () => {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'red';
+      classificationResults.forEach((result, index) => {
+        ctx.font = '16px Arial';
+        ctx.fillText(`${result.label} (${result.confidence.toFixed(2)})`, 10, index * 20 + 20);
+      });
+      requestAnimationFrame(draw);
+    }
+
+    preload();
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentiment Analysis</title>
+</head>
+<body>
+  <form id="form">
+    <label for="input">Type a sentence:</label>
+    <input type="text" id="input" placeholder="Type a sentence">
+    <button type="submit">Submit</button>
+  </form>
+  <div id="results"></div>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+  <script>
+
+    const $form = document.querySelector("#form");
+    const $results = document.querySelector("#results");
+    let sentiment;
+
+    const preload = async () => {
+      console.log('preload');
+      const options = { probabilityThreshold: 0.7 };
+      sentiment = ml5.sentiment("MovieReviews");
+      await sentiment.ready;
+      console.log('model ready');
+      setup();
+    };
+
+    const setup = async () => {
+      console.log('setup');
+      $form.addEventListener("submit", handleSubmit);
+    };
+
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+      const sentence = $form.querySelector("#input").value;
+      const prediction = await sentiment.predict(sentence);
+      console.log(prediction);
+    };
+
+    preload();
+  </script>
+</body>
+</html>

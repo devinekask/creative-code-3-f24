@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sound Classifier</title>
+</head>
+<body>
+  <div id="results"></div>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+  <script>
+
+    const $results = document.querySelector("#results");
+    let classifier;
+    let predictedWord = "no word detected";
+    const words = [
+      "zero",
+      "one",
+      "two",
+      "three",
+      "four",
+      "five",
+      "six",
+      "seven",
+      "eight",
+      "nine",
+      "up",
+      "down",
+      "left",
+      "right",
+      "go",
+      "stop",
+      "yes",
+      "no",
+    ];
+
+    const preload = async () => {
+      console.log('preload');
+      const options = { probabilityThreshold: 0.7 };
+      classifier = ml5.soundClassifier("SpeechCommands18w", options);
+      await classifier.ready;
+      console.log('model ready');
+      setup();
+    }
+
+    const setup = async () => {
+      console.log('setup');
+      // start classification
+      classifier.classifyStart(gotResults);
+    }
+
+    const gotResults = (results) => {
+      console.log(results);
+      if (results[0].confidence > 0.7) {
+        predictedWord = results[0].label;
+      } else {
+        predictedWord = "no word detected";
+      }
+      $results.innerHTML = predictedWord;
+    }
+
+    preload();
+  </script>
+</body>
+</html>
