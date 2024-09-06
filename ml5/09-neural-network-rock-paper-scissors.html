@@ -71,14 +71,16 @@
     const pretrainedModelURL = new URL("./models/rock-paper-scissors/model.json", origin);
 
     const setState = (value) => {
+      console.log('setState', value);
       state = value;
+      $state.textContent = state;
       document.documentElement.classList.remove(...ALL_STATES);
       document.documentElement.classList.add(state);
     };
 
     const preload = async () => {
       setState(STATE_LOADING);
-      requestAnimationFrame(draw); // we start our draw loop immediately
+      requestAnimationFrame(draw);
       console.log('preload');
       handPose = ml5.handPose();
       await handPose.ready;
@@ -170,7 +172,6 @@
     }
 
     const draw = () => {
-      $state.textContent = state;
       if (state == STATE_LOADING) {
         drawLoading();
       } else if (state === STATE_SAMPLING) {

@@ -1,26 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="loading">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sentiment Analysis</title>
+  <style>
+    .hidden {
+      display: none;
+    }
+    .loading .display-loading {
+      display: block;
+    }
+    .running .display-running {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <form id="form">
+  <h1>Sentiment Analysis</h1>
+  <h2 id="state"></h2>
+  <form id="form" class="hidden display-running">
     <label for="input">Type a sentence:</label>
     <input type="text" id="input" placeholder="Type a sentence">
     <button type="submit">Submit</button>
   </form>
-  <div id="results"></div>
+  <div id="results" class="hidden display-running"></div>
   <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
   <script>
 
     const $form = document.querySelector("#form");
     const $results = document.querySelector("#results");
+    const $state = document.querySelector('#state');
     let sentiment;
 
+    const STATE_LOADING = "loading";
+    const STATE_RUNNING = "running";
+    const ALL_STATES = [STATE_LOADING, STATE_RUNNING];
+    let state = STATE_LOADING;
+
+    const setState = (value) => {
+      console.log('setState', value);
+      state = value;
+      $state.textContent = state;
+      document.documentElement.classList.remove(...ALL_STATES);
+      document.documentElement.classList.add(state);
+    };
+
     const preload = async () => {
-      console.log('preload');
+      setState(STATE_LOADING);
+      requestAnimationFrame(draw);
       const options = { probabilityThreshold: 0.7 };
       sentiment = ml5.sentiment("MovieReviews");
       await sentiment.ready;
@@ -31,6 +59,8 @@
     const setup = async () => {
       console.log('setup');
       $form.addEventListener("submit", handleSubmit);
+      // start the app
+      setState(STATE_RUNNING);
     };
 
     const handleSubmit = async (event) => {
@@ -39,6 +69,10 @@
       const prediction = await sentiment.predict(sentence);
       console.log(prediction);
     };
+
+    const draw = () => {
+      requestAnimationFrame(draw);
+    }
 
     preload();
   </script>

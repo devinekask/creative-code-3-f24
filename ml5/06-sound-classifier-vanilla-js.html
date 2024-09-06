@@ -1,16 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="loading">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sound Classifier</title>
+  <style>
+    .hidden {
+      display: none;
+    }
+    .loading .display-loading {
+      display: block;
+    }
+    .running .display-running {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <div id="results"></div>
+  <h1>Sound Classifier</h1>
+  <h2 id="state"></h2>
+  <div id="results" class="hidden display-running"></div>
   <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
   <script>
 
     const $results = document.querySelector("#results");
+    const $state = document.querySelector('#state');
     let classifier;
     let predictedWord = "no word detected";
     const words = [
@@ -34,8 +48,22 @@
       "no",
     ];
 
+    const STATE_LOADING = "loading";
+    const STATE_RUNNING = "running";
+    const ALL_STATES = [STATE_LOADING, STATE_RUNNING];
+    let state = STATE_LOADING;
+
+    const setState = (value) => {
+      console.log('setState', value);
+      state = value;
+      $state.textContent = state;
+      document.documentElement.classList.remove(...ALL_STATES);
+      document.documentElement.classList.add(state);
+    };
+
     const preload = async () => {
-      console.log('preload');
+      setState(STATE_LOADING);
+      requestAnimationFrame(draw);
       const options = { probabilityThreshold: 0.7 };
       classifier = ml5.soundClassifier("SpeechCommands18w", options);
       await classifier.ready;
@@ -47,6 +75,8 @@
       console.log('setup');
       // start classification
       classifier.classifyStart(gotResults);
+      // start the app
+      setState(STATE_RUNNING);
     }
 
     const gotResults = (results) => {
@@ -56,7 +86,13 @@
       } else {
         predictedWord = "no word detected";
       }
-      $results.innerHTML = predictedWord;
+    }
+
+    const draw = () => {
+      if (state === STATE_RUNNING) {
+        $results.textContent = predictedWord;
+      }
+      requestAnimationFrame(draw);
     }
 
     preload();
