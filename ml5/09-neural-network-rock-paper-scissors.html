@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Neural Network Rock Paper Scissors</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
   <style>
     .hidden {
       display: none;
@@ -20,12 +22,25 @@
     .predicting .display-predicting {
       display: block;
     }
+    #results {
+      background-color: white;
+      width: 20rem;
+      min-height: 6rem;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 2rem;
+    }
+    .predicting #results {
+      display: flex;
+    }
   </style>
 </head>
 <body>
-  <h1>Neural Network Rock Paper Scissors</h1>
+  <h1 class="h1">Neural Network Rock Paper Scissors</h1>
   <h2 id="state"></h2>
-  <canvas id="canvas" class="hidden display-sampling display-predicting display-training"></canvas>
+  <canvas id="canvas" class="fancy-shadow hidden display-sampling display-predicting display-training"></canvas>
   <div class="hidden display-sampling">
     <button id="rock">Rock</button>
     <button id="paper">Paper</button>

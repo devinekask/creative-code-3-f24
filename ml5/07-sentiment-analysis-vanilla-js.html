@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sentiment Analysis</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
   <style>
     .hidden {
       display: none;
@@ -14,17 +16,30 @@
     .running .display-running {
       display: block;
     }
+    #results {
+      background-color: white;
+      width: 20rem;
+      min-height: 6rem;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 2rem;
+    }
+    .running #results {
+      display: flex;
+    }
   </style>
 </head>
 <body>
-  <h1>Sentiment Analysis</h1>
+  <h1 class="h1">Sentiment Analysis</h1>
   <h2 id="state"></h2>
   <form id="form" class="hidden display-running">
     <label for="input">Type a sentence:</label>
     <input type="text" id="input" placeholder="Type a sentence">
     <button type="submit">Submit</button>
   </form>
-  <div id="results" class="hidden display-running"></div>
+  <div id="results" class="fancy-shadow hidden display-running"></div>
   <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
   <script>
 
@@ -67,7 +82,7 @@
       event.preventDefault();
       const sentence = $form.querySelector("#input").value;
       const prediction = await sentiment.predict(sentence);
-      console.log(prediction);
+      $results.textContent = prediction.confidence.toFixed(3);
     };
 
     const draw = () => {

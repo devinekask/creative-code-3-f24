@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Image Classifier</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
   <style>
     .hidden {
       display: none;
@@ -14,13 +16,26 @@
     .running .display-running {
       display: block;
     }
+    #results {
+      background-color: white;
+      width: 20rem;
+      min-height: 6rem;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 2rem;
+    }
+    .running #results {
+      display: flex;
+    }
   </style>
 </head>
 <body>
-  <h1>Image Classifier</h1>
+  <h1 class="h1">Image Classifier</h1>
   <h2 id="state"></h2>
-  <canvas id="canvas" class="hidden display-running"></canvas>
-  <div id="results" class="hidden display-running"></div>
+  <canvas id="canvas" class="fancy-shadow hidden display-running"></canvas>
+  <div id="results" class="fancy-shadow hidden display-running"></div>
   <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
   <script>
 

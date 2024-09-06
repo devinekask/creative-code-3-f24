@@ -4,10 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Body Segmentation</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    body {
-      background-color: beige;
-    }
     .hidden {
       display: none;
     }
@@ -20,9 +19,9 @@
   </style>
 </head>
 <body>
-  <h1>Body Segmentation</h1>
+  <h1 class="h1">Body Segmentation</h1>
   <h2 id="state"></h2>
-  <canvas id="canvas" class="hidden display-running"></canvas>
+  <canvas id="canvas" class="fancy-shadow hidden display-running"></canvas>
   <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
   <script>
 
