@@ -13,7 +13,7 @@
     let classifier;
     let classificationResults = [];
 
-    async function preload() {
+    const preload = async () => {
       console.log('preload');
       classifier = ml5.imageClassifier("MobileNet");
       await classifier.ready;
@@ -21,7 +21,7 @@
       setup();
     }
 
-    async function setup() {
+    const setup = async () => {
       console.log('setup');
       // create a canvas
       canvas = document.createElement('canvas');
@@ -44,11 +44,11 @@
       requestAnimationFrame(draw);
     }
 
-    function gotResults(results) {
+    const gotResults = (results) => {
       classificationResults = results;
     }
 
-    function draw() {
+    const draw = () => {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       ctx.fillStyle = 'red';
       classificationResults.forEach((result, index) => {

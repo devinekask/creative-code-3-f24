@@ -12,7 +12,7 @@
     let video, canvas, ctx;
     let poses = [];
 
-    async function preload() {
+    const preload = async () => {
       console.log('preload');
       // bodyPose = ml5.bodyPose();
       bodyPose = ml5.bodyPose("BlazePose");
@@ -21,7 +21,7 @@
       setup();
     }
 
-    async function setup() {
+    const setup = async () => {
       console.log('setup');
       // create a canvas
       canvas = document.createElement('canvas');
@@ -43,11 +43,11 @@
       requestAnimationFrame(draw);
     }
 
-    function gotPoses(results) {
+    const gotPoses = (results) => {
       poses = results;
     }
 
-    function draw() {
+    const draw = () => {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       ctx.fillStyle = 'red';
       poses.forEach(pose => {

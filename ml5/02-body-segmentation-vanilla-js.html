@@ -19,7 +19,7 @@
     let bodySegmentation;
     let segmentation;
 
-    async function preload() {
+    const preload = async () => {
       console.log('preload');
       // bodySegmentation = ml5.bodySegmentation("BodyPix", { maskType: "parts"});
       bodySegmentation = ml5.bodySegmentation("SelfieSegmentation", {
@@ -30,7 +30,7 @@
       setup();
     }
 
-    async function setup() {
+    const setup = async () => {
       console.log('setup');
       // create a canvas
       canvas = document.createElement('canvas');
@@ -55,11 +55,11 @@
       requestAnimationFrame(draw);
     }
 
-    function gotResults(result) {
+    const gotResults = (result) => {
       segmentation = result;
     }
 
-    function draw() {
+    const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (segmentation) {
         // draw the mask to a canvas

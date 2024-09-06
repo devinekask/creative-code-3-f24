@@ -14,7 +14,7 @@
     let options = { maxFaces: 1, refineLandmarks: false, flipped: false };
     let faces = [];
 
-    async function preload() {
+    const preload = async () => {
       console.log('preload');
       faceMesh = ml5.faceMesh(options);
       await faceMesh.ready;
@@ -22,7 +22,7 @@
       setup();
     }
 
-    async function setup() {
+    const setup = async () => {
       console.log('setup');
       // create a canvas
       canvas = document.createElement('canvas');
@@ -44,11 +44,11 @@
       requestAnimationFrame(draw);
     }
 
-    function gotPoses(results) {
+    const gotPoses = (results) => {
       faces = results;
     }
 
-    function draw() {
+    const draw = () => {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       ctx.fillStyle = 'red';
       faces.forEach(face => {
