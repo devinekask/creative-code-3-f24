@@ -28,7 +28,7 @@ Create a copy of the [Neural Network Rock-Paper-Scissors](./demos/09-neural-netw
 4. Load the Face Mesh model instead of the Hand Pose model.
 5. Make the circles a bit smaller in your drawVideoWithKeyPoints function. You should see your face points on the screen.
 
-TODO: INSERT IMAGE HERE
+![face points on screen](./images/face-points.jpg)
 
 ### Step 2: Training our initial model
 
@@ -40,7 +40,7 @@ Let's try training our model to recognize when we:
 
 Take a lot of sample for these 3 classes and hit the train button. We're getting this loss function:
 
-TODO: INSERT IMAGE HERE
+![initial loss function](./images/loss-01.png)
 
 The loss doesn't really go down, and the model doesn't seem to work. There's a couple of strategies you can take when this happens:
 
@@ -87,7 +87,7 @@ const keypoints = getRelevantKeyPoints(faces[0]).map(keypoint => [keypoint.x, ke
 
 The loss function goes down, but it seems like the training needs more time to finish:
 
-TODO: INSERT IMAGE HERE
+![improved loss](./images/loss-02.png)
 
 Increase the number of epochs to 200 and try training again:
 
@@ -97,6 +97,8 @@ const options = {
 };
 classifier.train(options, whileTraining, finishedTraining);
 ```
+
+![improved loss](./images/loss-03.png)
 
 The loss function goes down further, but not fast enough. However, there's one more trick we can apply to our input data.
 
@@ -160,7 +162,7 @@ const getRelevantKeyPoints = (face) => {
 
 Go through the sampling and training process again. Make sure to capture different angles of your face, to make your model more robust. We're getting a nice loss graph:
 
-TODO: INSERT IMAGE HERE
+![final loss](./images/loss-04.png)
 
 Make sure to save your model once you're happy with the results!
 
