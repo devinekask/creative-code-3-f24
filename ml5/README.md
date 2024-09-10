@@ -1,6 +1,10 @@
 # ML5
 
+The content in this repo follows on an introduction presentation in class.
+
 ## Examples
+
+We've prepared a couple of examples to get you started with ML5.js with vanilla JavaScript. They are explained in depth during class. You can find these examples in the [demos](./demos) folder:
 
 - [Body Pose](./demos/01-bodypose-vanilla-js.html)
 - [Body Segmentation](./demos/02-body-segmentation-vanilla-js.html)
