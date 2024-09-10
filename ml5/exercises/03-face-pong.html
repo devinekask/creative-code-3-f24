@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Face Breakout</title>
+  <title>Face Pong</title>
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -41,7 +41,7 @@
   </style>
 </head>
 <body>
-  <h1 class="h1">Face Breakout</h1>
+  <h1 class="h1">Face Pong</h1>
   <h2 id="state"></h2>
   <canvas id="canvas" class="fancy-shadow hidden display-sampling display-predicting display-training"></canvas>
   <div class="hidden display-intro">
@@ -84,6 +84,10 @@
     let classifier;
     let faces = [];
     let classificationResults = [];
+
+    const PADDLE_SIZE = 100;
+    // start with the paddle in the middle
+    let paddleY = 480 / 2 - PADDLE_SIZE / 2;
 
     const STATE_LOADING = "loading";
     const STATE_INTRO = "intro";
@@ -160,7 +164,7 @@
       };
       classifier = ml5.neuralNetwork(classifierOptions);
       const origin = new URL(window.location.href);
-      const pretrainedModelURL = new URL("./models/face-breakout/model.json", origin);
+      const pretrainedModelURL = new URL("./models/face-pong/model.json", origin);
       // add event listeners to buttons
       $start.addEventListener('click', () => {
         classifier.load(pretrainedModelURL.toString(), () => {
@@ -242,7 +246,17 @@
 
     const drawPredicting = () => {
       drawVideoWithKeyPoints();
-      $results.textContent = classificationResults[0]?.label;
+      const classification = classificationResults[0]?.label;
+      $results.textContent = classification;
+      // update the paddle position based on the classification
+      if (classification === 'up') {
+        paddleY -= 5;
+      } else if (classification === 'down') {
+        paddleY += 5;
+      }
+      // draw the paddle
+      ctx.fillStyle = 'blue';
+      ctx.fillRect(0, paddleY, 20, PADDLE_SIZE);
     };
 
     const drawVideoWithKeyPoints = () => {

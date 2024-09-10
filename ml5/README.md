@@ -12,9 +12,9 @@
 - [Teachable Machine](./demos/08-teachable-machine-image-classifier.html)
 - [Neural Network Rock-Paper-Scissors](./demos/09-neural-network-rock-paper-scissors.html)
 
-## Exercise - Face Breakout
+## Exercise - Face Pong
 
-We'll build a version of the "Breakout" arcade game, which we'll control with our eyebrows.
+We'll build a version of the "Pong" arcade game, which we'll control with our eyebrows.
 
 Let's combine the Face Mesh model with a Neural Network to control the paddle.
 
@@ -22,7 +22,7 @@ Let's combine the Face Mesh model with a Neural Network to control the paddle.
 
 Create a copy of the [Neural Network Rock-Paper-Scissors](./demos/09-neural-network-rock-paper-scissors.html) and make some adjustments.
 
-1. Change the title and h1 to "Face Breakout".
+1. Change the title and h1 to "Face Pong".
 2. Change the buttons, so they say "up", "neutral", and "down". Make sure to update the ids and variable names as well and change the values you pass into the `sample()` function. **VS Code Tip**: Use `Ctrl + D` to select all occurrences of the same word. Additionally, you can right-click on a variable and select "rename symbol" to change all occurrences of that variable.
 3. Change the `handPose` and `hands` variables to `faceMesh` and `faces`.
 4. Load the Face Mesh model instead of the Hand Pose model.
@@ -164,7 +164,7 @@ TODO: INSERT IMAGE HERE
 
 Make sure to save your model once you're happy with the results!
 
-You can compare your current state of this excercise with [01-face-breakout.html](./exercises/01-face-breakout.html).
+You can compare your current state of this excercise with [01-face-pong.html](./exercises/01-face-pong.html).
 
 ### Step 5: Adding an intro state
 
@@ -232,8 +232,146 @@ $create.addEventListener('click', () => {
 
 Finally, replace the `setState(STATE_SAMPLING);` with `setState(STATE_INTRO);` at the end of your `setup()` function.
 
-You should now be able to either go to the game state by pressing the start button or go to the sampling state by pressing the create button. You can compare your version with the solution in [02-face-breakout.html](./exercises/02-face-breakout.html).
+You should now be able to either go to the game state by pressing the start button or go to the sampling state by pressing the create button. You can compare your version with the solution in [02-face-pong.html](./exercises/02-face-pong.html).
 
-### Step 6: Creating the game
+### Step 6: Moving the paddle
 
 We've reached the game-creation part of our exercise! We now have a robust system to detect whether we want to move the paddle up, down, or keep it in the middle. Let's create a simple game where we control the paddle with our eyebrows.
+
+Create 2 new global variables which describe the paddle position and size:
+
+```javascript
+const PADDLE_SIZE = 100;
+// start with the paddle in the middle
+let paddleY = 480 / 2 - PADDLE_SIZE / 2;
+```
+
+Update the `drawPredicting()` function to update the paddle position based on the prediction:
+
+```javascript
+const drawPredicting = () => {
+  drawVideoWithKeyPoints();
+  const classification = classificationResults[0]?.label;
+  $results.textContent = classification;
+  // update the paddle position based on the classification
+  if (classification === 'up') {
+    paddleY -= 5;
+  } else if (classification === 'down') {
+    paddleY += 5;
+  }
+  // draw the paddle
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(0, paddleY, 20, PADDLE_SIZE);
+};
+```
+
+You should see the paddle move, based upon your eyebrow movements:
+
+![moving the paddle gif](./images/control-paddle.gif)
+
+You can compare your current state of this excercise with [03-face-pong.html](./exercises/03-face-pong.html).
+
+### Step 7 - constraining the paddle & adding the ball
+
+We need to make sure the paddle doesn't move outside of the canvas. We can do so by adding the following code to the `drawPredicting()` function:
+
+```javascript
+// make sure the paddle doesn't move outside of the canvas
+paddleY = Math.max(0, Math.min(paddleY, 480 - PADDLE_SIZE));
+```
+
+Next up, create the necessary variables in your global scope for controlling the ball. We need to keep track of the position and the speed of the ball:
+
+```javascript
+const BALL_SIZE = 20;
+let ballX = 320;
+let ballY = 240;
+let ballSpeedX = 5;
+let ballSpeedY = 5;
+```
+
+Update the `drawPredicting()` function to update the ball position and draw it:
+
+```javascript
+// update the ball position
+ballX += ballSpeedX;
+ballY += ballSpeedY;
+// draw the ball
+ctx.fillStyle = 'green';
+ctx.beginPath();
+ctx.arc(ballX, ballY, BALL_SIZE, 0, 2 * Math.PI);
+ctx.fill();
+```
+
+You should see the ball move around the screen. However, it will move off the screen, as we haven't implemented any collision detection with the walls yet.
+
+Update the `drawPredicting()` function to make the ball bounce off the walls:
+
+```javascript
+  // update the ball position
+  ballX += ballSpeedX;
+  ballY += ballSpeedY;
+  // make the ball bounce off the walls
+  if (ballX - BALL_SIZE / 2 + ballSpeedX < 0 || ballX + BALL_SIZE / 2 + ballSpeedX > canvas.width) {
+    ballSpeedX *= -1;
+  }
+  if (ballY - BALL_SIZE / 2 + ballSpeedY < 0 || ballY + BALL_SIZE / 2 + ballSpeedY > canvas.height) {
+    ballSpeedY *= -1;
+  }
+```
+
+You should now see the ball bounce off the walls. You can compare your current state of this excercise with [04-face-pong.html](./exercises/04-face-pong.html).
+
+### Step 8 - collide with paddle or lose
+
+We need to check if the ball collides with the paddle. If it does, we should make the ball bounce back. If it doesn't, we should go to a lost state.
+
+Update the `drawPredicting()` function to check for collisions with the paddle:
+
+```javascript
+// check for collision with the paddle
+if (ballX - BALL_SIZE / 2 < 20 && ballY > paddleY && ballY < paddleY + PADDLE_SIZE) {
+  ballSpeedX *= -1;
+}
+```
+
+Additionally, check if the ball goes off the left side of the screen. To do so, remove the bounce logic for that side, and add a seperate check for the ball going off the screen. If it does, reset the ball position and speed, and move to the intro state for now (we'll create a lost state later):
+
+```javascript
+// check if we missed the ball
+if (ballX - BALL_SIZE / 2 + ballSpeedX < 0) {
+  // reset the ball position
+  ballX = 320;
+  ballY = 240;
+  // reset the ball speed
+  ballSpeedX = 5;
+  ballSpeedY = 5;
+  // go to the intro state for now
+  setState(STATE_INTRO);
+}
+// make the ball bounce off the walls
+if (ballX + BALL_SIZE / 2 + ballSpeedX > canvas.width) {
+  ballSpeedX *= -1;
+}
+if (ballY - BALL_SIZE / 2 + ballSpeedY < 0 || ballY + BALL_SIZE / 2 + ballSpeedY > canvas.height) {
+  ballSpeedY *= -1;
+}
+```
+
+Once this is working, we can create a lost state:
+
+1. Create a css selector for that state
+2. Define a `STATE_LOST` variable and add it to `ALL_STATES`
+3. Create a `drawLost()` function and call that one from your `draw()` function when the state is `STATE_LOST`
+4. Add a button to restart the game. This button should go back to the `STATE_PREDICTING` state.
+
+You can compare your current state of this excercise with [05-face-pong.html](./exercises/05-face-pong.html).
+
+### Where to go next
+
+Our game is quite simple at the moment. You could add more features to it, such as:
+
+- Add a score counter for each time you bounce the ball off the paddle
+- Add a countdown before the game starts
+- Cleaning up the graphics
+- Adding sound effects

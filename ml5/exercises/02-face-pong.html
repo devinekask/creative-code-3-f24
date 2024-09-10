@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Pong</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .hidden {
+      display: none;
+    }
+    .loading .display-loading {
+      display: block;
+    }
+    .intro .display-intro {
+      display: block;
+    }
+    .sampling .display-sampling {
+      display: block;
+    }
+    .training .display-training {
+      display: block;
+    }
+    .predicting .display-predicting {
+      display: block;
+    }
+    #results {
+      background-color: white;
+      width: 20rem;
+      min-height: 6rem;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 2rem;
+    }
+    .predicting #results {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="h1">Face Pong</h1>
+  <h2 id="state"></h2>
+  <canvas id="canvas" class="fancy-shadow hidden display-sampling display-predicting display-training"></canvas>
+  <div class="hidden display-intro">
+    <button id="start">Start</button>
+    <button id="create">Create Model</button>
+  </div>
+  <div class="hidden display-sampling">
+    <button id="up">up</button>
+    <button id="neutral">Neutral</button>
+    <button id="down">down</button>
+  </div>
+  <div class="hidden display-sampling">
+    <button id="train">Train</button>
+    <button id="load">Load the pretrained model</button>
+  </div>
+  <div class="hidden display-predicting">
+    <button id="save">Save Model</button>
+  </div>
+  <div id="training" class="hidden display-training"></div>
+  <div id="results" class="hidden display-predicting"></div>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+  <script>
+
+    const $state = document.querySelector('#state');
+    const $canvas = document.querySelector('#canvas');
+    const $start = document.querySelector('#start');
+    const $create = document.querySelector('#create');
+    const $up = document.querySelector('#up');
+    const $neutral = document.querySelector('#neutral');
+    const $down = document.querySelector('#down');
+    const $train = document.querySelector('#train');
+    const $save = document.querySelector('#save');
+    const $load = document.querySelector('#load');
+
+    const $training = document.querySelector('#training');
+    const $results = document.querySelector('#results');
+
+    let video, ctx;
+    let faceMesh;
+    let classifier;
+    let faces = [];
+    let classificationResults = [];
+
+    const STATE_LOADING = "loading";
+    const STATE_INTRO = "intro";
+    const STATE_SAMPLING = "sampling";
+    const STATE_TRAINING = "training";
+    const STATE_PREDICTING = "predicting";
+    const ALL_STATES = [
+      STATE_LOADING,
+      STATE_INTRO,
+      STATE_SAMPLING,
+      STATE_TRAINING,
+      STATE_PREDICTING
+    ];
+    let state = STATE_LOADING;
+
+    const setState = (value) => {
+      console.log('setState', value);
+      state = value;
+      $state.textContent = state;
+      document.documentElement.classList.remove(...ALL_STATES);
+      document.documentElement.classList.add(state);
+    };
+
+    const preload = async () => {
+      setState(STATE_LOADING);
+      requestAnimationFrame(draw);
+      console.log('preload');
+      const options = {
+        maxFaces: 1,
+        refineLandmarks: false,
+        flipped: false
+      };
+      faceMesh = ml5.faceMesh(options);
+      await faceMesh.ready;
+      console.log('model ready');
+      setup();
+    }
+
+    const setup = async () => {
+      console.log('setup');
+      ctx = $canvas.getContext('2d');
+      // create a video stream - specify a fixed size
+      const stream = await navigator.mediaDevices.getUserMedia({ video: {
+        width: 640,
+        height: 480
+      } });
+      video = document.createElement('video');
+      video.srcObject = stream;
+      video.play();
+      // set canvas & video size
+      $canvas.width = video.width = 640;
+      $canvas.height = video.height = 480;
+      // start detecting hands
+      faceMesh.detectStart(video, (results) => {
+        faces = results;
+        if (state === STATE_PREDICTING) {
+          if (faces.length === 0) {
+            return;
+          }
+          // the keypoints should be one big array of numbers
+          const keypoints = getRelevantKeyPoints(faces[0]).map(keypoint => [keypoint.x, keypoint.y]).flat();
+          classifier.classify(keypoints, (results) => {
+            classificationResults = results;
+          });
+        }
+      });
+      // For this example to work across all browsers
+      // "webgl" or "cpu" needs to be set as the backend
+      ml5.setBackend("webgl");
+      // Set up the neural network
+      let classifierOptions = {
+        task: "classification",
+        debug: true,
+      };
+      classifier = ml5.neuralNetwork(classifierOptions);
+      const origin = new URL(window.location.href);
+      const pretrainedModelURL = new URL("./models/face-pong/model.json", origin);
+      // add event listeners to buttons
+      $start.addEventListener('click', () => {
+        classifier.load(pretrainedModelURL.toString(), () => {
+          console.log('model loaded');
+          setState(STATE_PREDICTING);
+        });
+      });
+      $create.addEventListener('click', () => {
+        setState(STATE_SAMPLING);
+      });
+      $up.addEventListener('click', () => sample('up'));
+      $neutral.addEventListener('click', () => sample('neutral'));
+      $down.addEventListener('click', () => sample('down'));
+      $train.addEventListener('click', () => train());
+      $save.addEventListener('click', () => classifier.save());
+      $load.addEventListener('click', () => classifier.load(pretrainedModelURL.toString(), () => {
+        console.log('model loaded');
+        setState(STATE_PREDICTING);
+      }));
+
+      setState(STATE_INTRO);
+    }
+
+    const sample = (label) => {
+      if (faces.length === 0) {
+        return;
+      }
+      // the keypoints should be one big array of numbers
+      const keypoints = getRelevantKeyPoints(faces[0]).map(keypoint => [keypoint.x, keypoint.y]).flat();
+      classifier.addData(keypoints, [label]);
+    };
+
+    const train = () => {
+      classifier.normalizeData();
+      const options = {
+        epochs: 200,
+      };
+      classifier.train(options, whileTraining, finishedTraining);
+      setState(STATE_TRAINING);
+    };
+
+    const whileTraining = (epoch, loss) => {
+      $training.textContent = `Epoch: ${epoch}, Loss: ${loss.loss}`;
+    };
+
+    const finishedTraining = () => {
+      console.log('finished training');
+      setState(STATE_PREDICTING);
+    };
+
+    const draw = () => {
+      if (state == STATE_LOADING) {
+        drawLoading();
+      } else if (state === STATE_INTRO) {
+        drawIntro();
+      } else if (state === STATE_SAMPLING) {
+        drawSampling();
+      } else if (state === STATE_TRAINING) {
+        drawTraining();
+      } else if (state === STATE_PREDICTING) {
+        drawPredicting();
+      }
+      requestAnimationFrame(draw);
+    }
+
+    const drawLoading = () => {
+    };
+
+    const drawIntro = () => {
+    };
+
+    const drawSampling = () => {
+      drawVideoWithKeyPoints();
+    };
+
+    const drawTraining = () => {
+      drawVideoWithKeyPoints();
+    };
+
+    const drawPredicting = () => {
+      drawVideoWithKeyPoints();
+      $results.textContent = classificationResults[0]?.label;
+    };
+
+    const drawVideoWithKeyPoints = () => {
+      ctx.drawImage(video, 0, 0, $canvas.width, $canvas.height);
+      ctx.fillStyle = 'red';
+      faces.forEach(face => {
+        const keypoints = getRelevantKeyPoints(face);
+        keypoints.forEach(keypoint => {
+          ctx.beginPath();
+          ctx.arc(keypoint.x, keypoint.y, 4, 0, 2 * Math.PI);
+          ctx.fill();
+        });
+      });
+    };
+
+    const getRelevantKeyPoints = (face) => {
+      const leftEyeCenter = {
+        x: face.leftEye.centerX,
+        y: face.leftEye.centerY,
+      };
+      const rightEyeCenter = {
+        x: face.rightEye.centerX,
+        y: face.rightEye.centerY,
+      };
+      // calculate the distance between the eyes, we use this as a distance-based scaling factor
+      const eyeDistance = Math.sqrt(
+        Math.pow(leftEyeCenter.x - rightEyeCenter.x, 2) +
+        Math.pow(leftEyeCenter.y - rightEyeCenter.y, 2)
+      );
+      const targetDistance = 100;
+      const keypointMap = (keypoint) => {
+        return {
+          x: targetDistance * (keypoint.x - face.box.xMin) / eyeDistance,
+          y: targetDistance * (keypoint.y - face.box.yMin) / eyeDistance,
+          z: keypoint.z
+        }
+      };
+      return [
+        ...face.leftEye.keypoints.filter((keypoint, index) => index % 3 === 0).map(keypointMap),
+        ...face.leftEyebrow.keypoints.filter((keypoint, index) => index % 3 === 0).map(keypointMap),
+        ...face.rightEye.keypoints.filter((keypoint, index) => index % 3 === 0).map(keypointMap),
+        ...face.rightEyebrow.keypoints.filter((keypoint, index) => index % 3 === 0).map(keypointMap),
+      ];
+    };
+
+    preload();
+  </script>
+</body>
+</html>
