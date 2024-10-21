@@ -1,0 +1,21 @@
+.hero {
+  display: flex;
+  justify-content: center;
+}
+
+.left_container svg,
+.middle_container svg,
+.right_container svg {
+  position: absolute;
+  top: 0;
+  visibility: hidden;
+}
+
+.left_container,
+.middle_container,
+.right_container {
+  position: relative;
+  width: calc(100vw/4);
+  padding-top: calc(100vw/4 * 1080/640);
+  /* Aspect ratio  */
+}
