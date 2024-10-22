@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scrolltrigger</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <section class="hero">
+    <div class="hero__content">
+      <h1 class="hero__title">Welcome to Scrollworld!</h1>
+    </div>
+    <picture class="hero__background">
+      <source
+        type="image/avif"
+        srcset="
+          assets/img/header_300.avif 300w,
+          assets/img/header_1070.avif 1070w,
+          assets/img/header_1490.avif 1490w,
+          assets/img/header_1810.avif 1810w,
+          assets/img/header_2080.avif 2080w,
+          assets/img/header_2320.avif 2320w,
+          assets/img/header_2540.avif 2540w,
+          assets/img/header_2740.avif 2740w,
+          assets/img/header_2930.avif 2930w,
+          assets/img/header_3110.avif 3110w,
+          assets/img/header_3270.avif 3270w,
+          assets/img/header_3430.avif 3430w,
+          assets/img/header_3580.avif 3580w,
+          assets/img/header_3730.avif 3730w,
+          assets/img/header_3870.avif 3870w,
+          assets/img/header_4000.avif 4000w,
+        "
+        sizes="(max-width: 4000px) 100vw" />
+      <img src="assets/img/header.jpg" class="responsive-image" alt="" />
+    </picture>
+  </section>
+  <section class="explore">
+    <div class="subtitlewrapper">
+      <h2 class="subtitle">Explore Scrollworld</h2>
+    </div>
+    <div class="panels">
+      <article class="panel">
+        <h3 class="panel__title">Temperature</h3>
+        <picture class="panel__picture">
+          <source
+            type="image/avif"
+            srcset="
+              assets/img/temperature_300.avif 300w,
+              assets/img/temperature_1070.avif 1070w,
+              assets/img/temperature_1490.avif 1490w,
+              assets/img/temperature_1810.avif 1810w,
+              assets/img/temperature_2080.avif 2080w,
+              assets/img/temperature_2320.avif 2320w,
+              assets/img/temperature_2540.avif 2540w,
+              assets/img/temperature_2740.avif 2740w,
+              assets/img/temperature_2930.avif 2930w,
+              assets/img/temperature_3110.avif 3110w,
+              assets/img/temperature_3270.avif 3270w,
+              assets/img/temperature_3430.avif 3430w,
+              assets/img/temperature_3580.avif 3580w,
+              assets/img/temperature_3730.avif 3730w,
+              assets/img/temperature_3870.avif 3870w,
+              assets/img/temperature_4000.avif 4000w,
+            "
+            sizes="(max-width: 4000px) 100vw" />
+          <img src="assets/img/temperature.jpg" class="responsive-image" alt="" />
+        </picture>
+      </article>
+      <article class="panel">
+        <h3 class="panel__title">Lifestyle</h3>
+        <picture class="panel__picture">
+          <source
+            type="image/avif"
+            srcset="
+              assets/img/lifestyle_300.avif 300w,
+              assets/img/lifestyle_1070.avif 1070w,
+              assets/img/lifestyle_1490.avif 1490w,
+              assets/img/lifestyle_1810.avif 1810w,
+              assets/img/lifestyle_2080.avif 2080w,
+              assets/img/lifestyle_2320.avif 2320w,
+              assets/img/lifestyle_2540.avif 2540w,
+              assets/img/lifestyle_2740.avif 2740w,
+              assets/img/lifestyle_2930.avif 2930w,
+              assets/img/lifestyle_3110.avif 3110w,
+              assets/img/lifestyle_3270.avif 3270w,
+              assets/img/lifestyle_3430.avif 3430w,
+              assets/img/lifestyle_3580.avif 3580w,
+              assets/img/lifestyle_3730.avif 3730w,
+              assets/img/lifestyle_3870.avif 3870w,
+              assets/img/lifestyle_4000.avif 4000w,
+            "
+            sizes="(max-width: 4000px) 100vw" />
+          <img src="assets/img/lifestyle.jpg" class="responsive-image" alt="" />
+        </picture>
+      </article>
+      <article class="panel">
+        <h3 class="panel__title">Nature</h3>
+        <picture class="panel__picture">
+          <source
+            type="image/avif"
+            srcset="
+              assets/img/nature_300.avif 300w,
+              assets/img/nature_1070.avif 1070w,
+              assets/img/nature_1490.avif 1490w,
+              assets/img/nature_1810.avif 1810w,
+              assets/img/nature_2080.avif 2080w,
+              assets/img/nature_2320.avif 2320w,
+              assets/img/nature_2540.avif 2540w,
+              assets/img/nature_2740.avif 2740w,
+              assets/img/nature_2930.avif 2930w,
+              assets/img/nature_3110.avif 3110w,
+              assets/img/nature_3270.avif 3270w,
+              assets/img/nature_3430.avif 3430w,
+              assets/img/nature_3580.avif 3580w,
+              assets/img/nature_3730.avif 3730w,
+              assets/img/nature_3870.avif 3870w,
+              assets/img/nature_4000.avif 4000w,
+            "
+            sizes="(max-width: 4000px) 100vw" />
+          <img src="assets/img/nature.jpg" class="responsive-image" alt="" />
+        </picture>
+      </article>
+      <article class="panel">
+        <h3 class="panel__title">People</h3>
+        <picture class="panel__picture">
+          <source
+            type="image/avif"
+            srcset="
+              assets/img/people_300.avif 300w,
+              assets/img/people_1070.avif 1070w,
+              assets/img/people_1490.avif 1490w,
+              assets/img/people_1810.avif 1810w,
+              assets/img/people_2080.avif 2080w,
+              assets/img/people_2320.avif 2320w,
+              assets/img/people_2540.avif 2540w,
+              assets/img/people_2740.avif 2740w,
+              assets/img/people_2930.avif 2930w,
+              assets/img/people_3110.avif 3110w,
+              assets/img/people_3270.avif 3270w,
+              assets/img/people_3430.avif 3430w,
+              assets/img/people_3580.avif 3580w,
+              assets/img/people_3730.avif 3730w,
+              assets/img/people_3870.avif 3870w,
+              assets/img/people_4000.avif 4000w,
+            "
+            sizes="(max-width: 4000px) 100vw" />
+          <img src="assets/img/people.jpg" class="responsive-image" alt="" />
+        </picture>
+      </article>
+    </div>
+  </section>
+  <footer>
+    <div class="footer__content">
+      <div class="footer__logo">
+        <img src="assets/img/logo.svg" alt="Scrollworld Logo">
+      </div>
+      <div class="footer__links">
+        <a href="#about">About Us</a>
+        <a href="#contact">Contact</a>
+        <a href="#privacy">Privacy Policy</a>
+        <a href="#terms">Terms of Service</a>
+      </div>
+      <div class="footer__social">
+        <a class="social-link" href="https://facebook.com" target="_blank">
+          <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50">
+            <path fill="currentColor" d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M37,19h-2c-2.14,0-3,0.5-3,2 v3h5l-1,5h-4v15h-5V29h-4v-5h4v-3c0-4,2-7,6-7c2.9,0,4,1,4,1V19z"></path>
+          </svg>
+        </a>
+        <a class="social-link" href="https://instagram.com" target="_blank">
+          <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50">
+            <path fill="currentColor" d="M 16 3 C 8.83 3 3 8.83 3 16 L 3 34 C 3 41.17 8.83 47 16 47 L 34 47 C 41.17 47 47 41.17 47 34 L 47 16 C 47 8.83 41.17 3 34 3 L 16 3 z M 37 11 C 38.1 11 39 11.9 39 13 C 39 14.1 38.1 15 37 15 C 35.9 15 35 14.1 35 13 C 35 11.9 35.9 11 37 11 z M 25 14 C 31.07 14 36 18.93 36 25 C 36 31.07 31.07 36 25 36 C 18.93 36 14 31.07 14 25 C 14 18.93 18.93 14 25 14 z M 25 16 C 20.04 16 16 20.04 16 25 C 16 29.96 20.04 34 25 34 C 29.96 34 34 29.96 34 25 C 34 20.04 29.96 16 25 16 z"></path>
+          </svg>
+        </a>
+        <a class="social-link" href="https://tiktok.com" target="_blank">
+          <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50">
+            <path fill="currentColor" d="M41,4H9C6.243,4,4,6.243,4,9v32c0,2.757,2.243,5,5,5h32c2.757,0,5-2.243,5-5V9C46,6.243,43.757,4,41,4z M37.006,22.323 c-0.227,0.021-0.457,0.035-0.69,0.035c-2.623,0-4.928-1.349-6.269-3.388c0,5.349,0,11.435,0,11.537c0,4.709-3.818,8.527-8.527,8.527 s-8.527-3.818-8.527-8.527s3.818-8.527,8.527-8.527c0.178,0,0.352,0.016,0.527,0.027v4.202c-0.175-0.021-0.347-0.053-0.527-0.053 c-2.404,0-4.352,1.948-4.352,4.352s1.948,4.352,4.352,4.352s4.527-1.894,4.527-4.298c0-0.095,0.042-19.594,0.042-19.594h4.016 c0.378,3.591,3.277,6.425,6.901,6.685V22.323z"></path>
+          </svg>
+        </a>
+      </div>
+      <div class="footer__copyright">
+        <p>&copy; 2024 Scrollworld. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="js/script.js"></script>
+</body>
+
+</html>
