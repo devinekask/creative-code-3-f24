@@ -1,0 +1,24 @@
+body {
+  margin: 0;
+}
+.div1,
+.div2 {
+  height: 100vh;
+}
+.div1 {
+  background-color: aqua;
+}
+.div2 {
+  background-color: blueviolet;
+}
+.square {
+  width: 150px;
+  height: 150px;
+  background-color: lightcoral;
+}
+.square2 {
+  width: 150px;
+  height: 150px;
+  background-color: lightgrey;
+  margin-top: 300px;
+}
