@@ -7,6 +7,7 @@
 
 Try to experiment/use 
 ------------------------
+- You will need some css to put the panels in a row without wrapping. There are some TODO-comments in the css file to help you get started.
 - standalone ScrollTrigger instance (ScrollTrigger.create() )
 - toggleActions
 - scrub
